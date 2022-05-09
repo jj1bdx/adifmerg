@@ -4330,69 +4330,65 @@ sub CheckQso() {
 
         # dxcc program now embedded in the code
         @entries = &dxcc("\U$rec[$recno]{CALL}");
-
-        # maximum five (5) words in the country name
-        if ( $entries[0] =~ /^([\w\s]*)$/i ) {
-            $ctry = $1;
-            if ( ( $ctry eq "Unknown" ) || ( $ctry eq "" ) ) {
-                $serr = $serr . "call?";
-                $nerr++;
+        $ctry    = $entries[0];
+        if ( ( $ctry eq "Unknown" ) || ( $ctry eq "" ) ) {
+            $serr = $serr . "call?";
+            $nerr++;
+        }
+        else {
+            if ( $rec[$recno]{COUNTRY} ) {
+                if ( $rec[$recno]{COUNTRY} ne $ctry ) {
+                    $serr = $serr . "cntry?";
+                    $nerr++;
+                }
             }
             else {
-                if ( $rec[$recno]{COUNTRY} ) {
-                    if ( $rec[$recno]{COUNTRY} ne $ctry ) {
-                        $serr = $serr . "cntry?";
-                        $nerr++;
-                    }
+                $rec[$recno]{COUNTRY} = $ctry;
+            }
+            $cq   = $entries[1];
+            $cq   = 1 * $cq;
+            $itu  = $entries[2];
+            $itu  = 1 * $itu;
+            $cont = $entries[3];
+            if ( $rec[$recno]{CQZ} ) {
+                if ( $rec[$recno]{CQZ} != $cq ) {
+                    $serr = $serr . "cq?";
+                    $nerr++;
                 }
-                else {
-                    $rec[$recno]{COUNTRY} = $ctry;
+            }
+            else {
+                $rec[$recno]{CQZ} = $cq;
+            }
+            if ( $rec[$recno]{ITUZ} ) {
+                if ( $rec[$recno]{ITUZ} != $itu ) {
+                    $serr = $serr . "itu?";
+                    $nerr++;
                 }
-                $cq   = $1 if ( $entries[1] =~ /^(\d{1,2})$/i );
-                $cq   = 1 * $cq;
-                $itu  = $1 if ( $entries[2] =~ /^(\d{1,2})$/i );
-                $itu  = 1 * $itu;
-                $cont = $1 if ( $entries[3] =~ /^(\w\w)$/i );
-                if ( $rec[$recno]{CQZ} ) {
-                    if ( $rec[$recno]{CQZ} != $cq ) {
-                        $serr = $serr . "cq?";
-                        $nerr++;
-                    }
+            }
+            else {
+                $rec[$recno]{ITUZ} = $itu;
+            }
+            if ( $rec[$recno]{CONT} ) {
+                if ( $rec[$recno]{CONT} ne $cont ) {
+                    $serr = $serr . "cont?";
+                    $nerr++;
                 }
-                else {
-                    $rec[$recno]{CQZ} = $cq;
-                }
-                if ( $rec[$recno]{ITUZ} ) {
-                    if ( $rec[$recno]{ITUZ} != $itu ) {
-                        $serr = $serr . "itu?";
-                        $nerr++;
-                    }
-                }
-                else {
-                    $rec[$recno]{ITUZ} = $itu;
-                }
-                if ( $rec[$recno]{CONT} ) {
-                    if ( $rec[$recno]{CONT} ne $cont ) {
-                        $serr = $serr . "cont?";
-                        $nerr++;
-                    }
-                }
-                else {
-                    $rec[$recno]{CONT} = $cont;
-                }
-                my $entityprefix = $1 if ( $entries[7] =~ /^(\w*)$/i );
-                if ( defined($entityprefix) ) {
-                    my $entitycode = $prefix_to_entitycode{$entityprefix};
-                    if ( defined($entitycode) ) {
-                        if ( $rec[$recno]{DXCC} ) {
-                            if ( $rec[$recno]{DXCC} ne $entitycode ) {
-                                $serr = $serr . "entitycode?";
-                                $nerr++;
-                            }
+            }
+            else {
+                $rec[$recno]{CONT} = $cont;
+            }
+            my $entityprefix = $entries[7];
+            if ( defined($entityprefix) ) {
+                my $entitycode = $prefix_to_entitycode{$entityprefix};
+                if ( defined($entitycode) ) {
+                    if ( $rec[$recno]{DXCC} ) {
+                        if ( $rec[$recno]{DXCC} ne $entitycode ) {
+                            $serr = $serr . "entitycode?";
+                            $nerr++;
                         }
-                        else {
-                            $rec[$recno]{DXCC} = $entitycode;
-                        }
+                    }
+                    else {
+                        $rec[$recno]{DXCC} = $entitycode;
                     }
                 }
             }
@@ -4404,63 +4400,61 @@ sub CheckQso() {
             # dxcc program now embedded in the code
             @entries2 = &dxcc("\U$rec[ $recno ]{STATION_CALLSIGN}");
 
-            # maximum five (5) words in the country name
-            if ( $entries2[0] =~ /^([\w\s]*)$/i ) {
-                $ctry2 = $1;
-                if ( ( $ctry2 eq "Unknown" ) || ( $ctry2 eq "" ) ) {
-                    $serr = $serr . "mycall?";
-                    $nerr++;
+            $ctry2 = $entries2[0];
+            if ( ( $ctry2 eq "Unknown" ) || ( $ctry2 eq "" ) ) {
+                $serr = $serr . "mycall?";
+                $nerr++;
+            }
+            else {
+                if ( $rec[$recno]{MY_COUNTRY} ) {
+                    if ( $rec[$recno]{MY_COUNTRY} ne $ctry2 ) {
+                        $serr = $serr . "mycntry?";
+                        $nerr++;
+                    }
                 }
                 else {
-                    if ( $rec[$recno]{MY_COUNTRY} ) {
-                        if ( $rec[$recno]{MY_COUNTRY} ne $ctry2 ) {
-                            $serr = $serr . "mycntry?";
-                            $nerr++;
-                        }
+                    $rec[$recno]{MY_COUNTRY} = $ctry2;
+                }
+                $cq2   = $entries2[1];
+                $cq2   = 1 * $cq2;
+                $itu2  = $entries2[2];
+                $itu2  = 1 * $itu2;
+                $cont2 = $entries2[3];
+                if ( $rec[$recno]{MY_CQ_ZONE} ) {
+                    if ( $rec[$recno]{MY_CQ_ZONE} != $cq2 ) {
+                        $serr = $serr . "mycq?";
+                        $nerr++;
                     }
-                    else {
-                        $rec[$recno]{MY_COUNTRY} = $ctry2;
+                }
+                else {
+                    $rec[$recno]{MY_CQ_ZONE} = $cq2;
+                }
+                if ( $rec[$recno]{MY_ITU_ZONE} ) {
+                    if ( $rec[$recno]{MY_ITU_ZONE} != $itu2 ) {
+                        $serr = $serr . "myitu?";
+                        $nerr++;
                     }
-                    $cq2   = $1 if ( $entries2[1] =~ /^(\d{1,2})$/i );
-                    $cq2   = 1 * $cq2;
-                    $itu2  = $1 if ( $entries2[2] =~ /^(\d{1,2})$/i );
-                    $itu2  = 1 * $itu2;
-                    $cont2 = $1 if ( $entries2[3] =~ /^(\w\w)$/i );
-                    if ( $rec[$recno]{MY_CQ_ZONE} ) {
-                        if ( $rec[$recno]{MY_CQ_ZONE} != $cq2 ) {
-                            $serr = $serr . "mycq?";
-                            $nerr++;
-                        }
-                    }
-                    else {
-                        $rec[$recno]{MY_CQ_ZONE} = $cq2;
-                    }
-                    if ( $rec[$recno]{MY_ITU_ZONE} ) {
-                        if ( $rec[$recno]{MY_ITU_ZONE} != $itu2 ) {
-                            $serr = $serr . "myitu?";
-                            $nerr++;
-                        }
-                    }
-                    else {
-                        $rec[$recno]{MY_ITU_ZONE} = $itu2;
-                    }
-                    my $entityprefix2 = $1 if ( $entries[7] =~ /^(\w*)$/i );
-                    if ( defined($entityprefix2) ) {
-                        my $entitycode2 = $prefix_to_entitycode{$entityprefix2};
-                        if ( defined($entitycode2) ) {
-                            if ( $rec[$recno]{MY_DXCC} ) {
-                                if ( $rec[$recno]{MY_DXCC} ne $entitycode2 ) {
-                                    $serr = $serr . "myentitycode?";
-                                    $nerr++;
-                                }
+                }
+                else {
+                    $rec[$recno]{MY_ITU_ZONE} = $itu2;
+                }
+                my $entityprefix2 = $entries[7];
+                if ( defined($entityprefix2) ) {
+                    my $entitycode2 = $prefix_to_entitycode{$entityprefix2};
+                    if ( defined($entitycode2) ) {
+                        if ( $rec[$recno]{MY_DXCC} ) {
+                            if ( $rec[$recno]{MY_DXCC} ne $entitycode2 ) {
+                                $serr = $serr . "myentitycode?";
+                                $nerr++;
                             }
-                            else {
-                                $rec[$recno]{MY_DXCC} = $entitycode2;
-                            }
+                        }
+                        else {
+                            $rec[$recno]{MY_DXCC} = $entitycode2;
                         }
                     }
                 }
             }
+
         }
     }
 
