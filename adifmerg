@@ -1409,8 +1409,8 @@ if ($opt_T) {
     }
 }
 
-# check if dxcc can be used to check the call sign
-# `dxcc`|| die("dxcc not found\n") if($opt_c);
+# At this moment, Option -c is disabled and will cause exit.
+die("dxcc augmentation function is disabled\n") if ($opt_c);
 
 if ($opt_f) {
     if ($file1) {
@@ -5650,8 +5650,8 @@ sub read_cty {
                 }
             }
 
-            # Continue with everything else.
-            # EXCLUDING full calls.
+            # Continue with everything else. Including full calls, which will
+            # be read as normal prefixes.
 
             # handle "normal" prefixes
             my @splitline = split( /,|;/, $line );
@@ -5670,6 +5670,11 @@ sub read_cty {
                             split( /,|;/, $line )
                         );
                     }
+
+                    # print "prefixes: $mainprefix\n";
+                    # for my $index (@{$prefixes{$mainprefix}}) {
+                    # print "element: $index\n";
+                    #	}
                 }
             }
         }
