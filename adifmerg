@@ -4437,7 +4437,7 @@ sub CheckQso() {
                 else {
                     $rec[$recno]{MY_ITU_ZONE} = $itu2;
                 }
-                my $entityprefix2 = $entries[7];
+                my $entityprefix2 = $entries2[7];
                 if ( defined($entityprefix2) ) {
                     my $entitycode2 = $prefix_to_entitycode{$entityprefix2};
                     if ( defined($entitycode2) ) {
