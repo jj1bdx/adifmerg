@@ -5536,6 +5536,8 @@ sub dxcc {
                 $matchchars  = $len;
                 $matchprefix = $mainprefix;
                 $goodzone    = $zones;
+
+                # print "Matched $test $len $mainprefix $zones\n";
             }
         }
     }
@@ -5574,10 +5576,10 @@ sub dxcc {
         if ( $mydxcc[7] eq '*JW/b' ) { $mydxcc[7] = "JW" }   # Bear Island
     }
 
-    # Leave CTY.dat DXCC Main Prefixes as they are
-    # DISABLED: CTY.dat uses "/" in some DXCC names, but I prefer to remove them, for example
-    # VP8/s ==> VP8s etc.
-    # $mydxcc[7] =~ s/\///g;
+# Leave CTY.dat DXCC Main Prefixes as they are
+# DISABLED: CTY.dat uses "/" in some DXCC names, but I prefer to remove them, for example
+# VP8/s ==> VP8s etc.
+# $mydxcc[7] =~ s/\///g;
 
     return @mydxcc;
 
@@ -5634,29 +5636,42 @@ sub read_cty {
             # it contains a slash
 
             if ( $line =~ /=/ ) {
+
+                # print "line: $line\n";
                 my @matches =
                   ( $line =~ /=([A-Z0-9\/]+)(\(\d+\))?(\[\d+\])?[,;]/g );
                 foreach (@matches) {
                     my $match = $_;
                     if ( defined($match) ) {
                         $fullcalls{$match} = 1;
+
+                        # print "fullcall: $match\n";
                     }
                 }
             }
 
-            # Continue with everything else. Including full calls, which will
-            # be read as normal prefixes.
-
-            $line =~ s/=//g;
+            # Continue with everything else.
+            # EXCLUDING full calls.
 
             # handle "normal" prefixes
-            unless ( defined( $prefixes{$mainprefix}[0] ) ) {
-                @{ $prefixes{$mainprefix} } = split( /,|;/, $line );
-            }
-            else {
-                push( @{ $prefixes{$mainprefix} }, split( /,|;/, $line ) );
-            }
+            my @splitline = split( /,|;/, $line );
 
+            # print "splitline: @splitline\n";
+            for my $word (@splitline) {
+                if ( !( $word =~ /=/ ) ) {
+
+                    # print "enter prefix: $word\n";
+                    unless ( defined( $prefixes{$mainprefix}[0] ) ) {
+                        @{ $prefixes{$mainprefix} } = split( /,|;/, $line );
+                    }
+                    else {
+                        push(
+                            @{ $prefixes{$mainprefix} },
+                            split( /,|;/, $line )
+                        );
+                    }
+                }
+            }
         }
     }
     close CTY;
