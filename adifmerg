@@ -5574,10 +5574,10 @@ sub dxcc {
         if ( $mydxcc[7] eq '*JW/b' ) { $mydxcc[7] = "JW" }   # Bear Island
     }
 
- # CTY.dat uses "/" in some DXCC names, but I prefer to remove them, for example
- # VP8/s ==> VP8s etc.
-
-    $mydxcc[7] =~ s/\///g;
+    # Leave CTY.dat DXCC Main Prefixes as they are
+    # DISABLED: CTY.dat uses "/" in some DXCC names, but I prefer to remove them, for example
+    # VP8/s ==> VP8s etc.
+    # $mydxcc[7] =~ s/\///g;
 
     return @mydxcc;
 
