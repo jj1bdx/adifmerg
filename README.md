@@ -1,3 +1,6 @@
+# adifmerg with DXCC/cty.dat function enhanced by JJ1BDX
+
+The `-c` option of adifmerg is executed by the internal dxcc script.
 
 adifmerg
 ========
