@@ -2,19 +2,21 @@
 
 The `-c` option of adifmerg is executed by the internal dxcc script.
 
-adifmerg
-========
+## License
+
+* GPLv2
+* cty.dat: MIT License (see cty.dat.copyright.dat)
+
+# adifmerg
 
 Small utility to convert ADIF files. To produce output without USERDEF fields
 use the switch __-u__. See the manual page in doc/.
 
-qsorep
-------
+## qsorep
 
 Create and maintain ADIF-file repository. See the manual page in doc/.
 
-Install
--------
+## Install
 
 See the __install__ script. For easier command line editing one of the 
 following could be installed on Rasbian Wheezy
@@ -25,8 +27,7 @@ libterm-readline-perl-perl  or
 libterm-readline-zoid-perl
 ```
 
-Files
------
+## Files
 
 ```asciidoc
 adifmerg 		- main program 
@@ -44,8 +45,7 @@ test/runtest		- test routine
 testrep/                - test repository for qsorep
 ```
 
-Testing
---------
+## Testing
 
 Test first by __cd test__ and __./runtest__.
 
