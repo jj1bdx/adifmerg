@@ -37,8 +37,6 @@ my $averno = "3.0.7";
 my %fullcalls;    # hash of arrays  fullcalls -> dxcc data
 my %prefixes;     # hash of arrays  prefixes -> dxcc data
 
-&DxccReadCty();
-
 my %prefix_to_entitycode = (
     "1A"    => 246,
     "1S"    => 247,
@@ -381,6 +379,9 @@ my %prefix_to_entitycode = (
     "ZS"    => 462,
     "ZS8"   => 201
 );
+
+# Read cty.dat
+&DxccReadCty();
 
 # general debugging switch
 my $dbug = 0;
@@ -4329,7 +4330,7 @@ sub CheckQso() {
 
         @entries = &DxccGetRecord("\U$rec[$recno]{CALL}");
         $ctry    = $entries[0];
-        if ( ( $ctry eq "Unknown" ) || ( $ctry eq "" ) ) {
+        if ( $ctry eq "Unknown" ) {
             $serr = $serr . "call?";
             $nerr++;
         }
@@ -4344,9 +4345,7 @@ sub CheckQso() {
                 $rec[$recno]{COUNTRY} = $ctry;
             }
             $cq   = $entries[1];
-            $cq   = 1 * $cq;
             $itu  = $entries[2];
-            $itu  = 1 * $itu;
             $cont = $entries[3];
             if ( $rec[$recno]{CQZ} ) {
                 if ( $rec[$recno]{CQZ} != $cq ) {
@@ -4375,20 +4374,16 @@ sub CheckQso() {
             else {
                 $rec[$recno]{CONT} = $cont;
             }
-            my $entityprefix = $entries[7];
-            if ( defined($entityprefix) ) {
-                my $entitycode = $prefix_to_entitycode{$entityprefix};
-                if ( defined($entitycode) ) {
-                    if ( $rec[$recno]{DXCC} ) {
-                        if ( $rec[$recno]{DXCC} ne $entitycode ) {
-                            $serr = $serr . "entitycode?";
-                            $nerr++;
-                        }
-                    }
-                    else {
-                        $rec[$recno]{DXCC} = $entitycode;
-                    }
+            my $entitycode = $entries[8];
+            print "entitycode: $entitycode\n";
+            if ( $rec[$recno]{DXCC} ) {
+                if ( $rec[$recno]{DXCC} ne $entitycode ) {
+                    $serr = $serr . "entitycode?";
+                    $nerr++;
                 }
+            }
+            else {
+                $rec[$recno]{DXCC} = $entitycode;
             }
         }
 
@@ -4413,9 +4408,7 @@ sub CheckQso() {
                     $rec[$recno]{MY_COUNTRY} = $ctry2;
                 }
                 $cq2   = $entries2[1];
-                $cq2   = 1 * $cq2;
                 $itu2  = $entries2[2];
-                $itu2  = 1 * $itu2;
                 $cont2 = $entries2[3];
                 if ( $rec[$recno]{MY_CQ_ZONE} ) {
                     if ( $rec[$recno]{MY_CQ_ZONE} != $cq2 ) {
@@ -4435,19 +4428,15 @@ sub CheckQso() {
                 else {
                     $rec[$recno]{MY_ITU_ZONE} = $itu2;
                 }
-                my $entityprefix2 = $entries2[7];
-                if ( defined($entityprefix2) ) {
-                    my $entitycode2 = $prefix_to_entitycode{$entityprefix2};
-                    if ( defined($entitycode2) ) {
-                        if ( $rec[$recno]{MY_DXCC} ) {
-                            if ( $rec[$recno]{MY_DXCC} ne $entitycode2 ) {
-                                $serr = $serr . "myentitycode?";
-                                $nerr++;
-                            }
-                        }
-                        else {
-                            $rec[$recno]{MY_DXCC} = $entitycode2;
-                        }
+                my $entitycode2 = $entries2[8];
+                if ( $rec[$recno]{MY_DXCC} ) {
+                    if ( $rec[$recno]{MY_DXCC} ne $entitycode2 ) {
+                        $serr = $serr . "myentitycode?";
+                        $nerr++;
+                    }
+                    else {
+                        $rec[$recno]{MY_DXCC} = $entitycode2;
+
                     }
                 }
             }
@@ -5290,6 +5279,7 @@ exit;
 # print "Latitude:       $dxcc[4]\n";
 # print "Longitude:      $dxcc[5]\n";
 # print "UTC shift:      $dxcc[6]\n";
+# print "Entity Code:    $dxcc[8]\n";
 #
 # print "\n";
 
@@ -5475,7 +5465,7 @@ sub DxccWpx {
 #
 # The return value is an array contains the following elements:
 # ("Country Name", "WAZ", "ITU", "Continent",
-#   "latitude", "longitude", "UTC difference", "DXCC").
+#   "latitude", "longitude", "UTC difference", "DXCC", "Entity Code").
 #
 ###############################################################################
 
@@ -5485,7 +5475,7 @@ sub DxccGetRecord {
     my $matchprefix = '';
     my $test;
     my $letter = '';
-    my @mydxcc = qw/Unknown 0 0 0 0 0 0 ?/;
+    my @mydxcc = qw/Unknown 0 0 0 0 0 0 ? 0/;
 
     # debug
     #print "testcall: $testcall\n";
@@ -5614,11 +5604,11 @@ sub DxccReadCty {
 
         if ( substr( $line, 0, 1 ) ne ' ' ) {    # New DXCC
             $line =~ /\s+([*A-Za-z0-9\/]+):\s+$/;
-            my $mainprefix = $1;
             $line =~ s/\s{2,}//g;
 
             # Save the current DXCC entry for the Main Prefix
             @lastdxcc = split( /:/, $line );
+            push( @lastdxcc, $prefix_to_entitycode{ $lastdxcc[7] } );
         }
         else {                                   # prefix-line
             $line =~ s/\s+//g;
