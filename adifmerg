@@ -4375,7 +4375,6 @@ sub CheckQso() {
                 $rec[$recno]{CONT} = $cont;
             }
             my $entitycode = $entries[8];
-            print "entitycode: $entitycode\n";
             if ( $rec[$recno]{DXCC} ) {
                 if ( $rec[$recno]{DXCC} ne $entitycode ) {
                     $serr = $serr . "entitycode?";
